@@ -26,15 +26,13 @@ end
 
 struct Turtle
 	root::Ref{Node}
-	tiles::Vector{Tile}
-	function Turtle(tiles::Vector{Tile} = Tile[])
+	function Turtle()
 		root = Ref(Node(0.0 + 0.0im))
-		new(root, tiles)
+		new(root)
 	end
 end
 
-function tile!(turtle::Turtle, index::Int, direction::Real, start::Int = 1, reverse::Bool = false)
-	tile = turtle.tiles[index]
+function tile!(turtle::Turtle, tile::Tile, direction::Real, start::Int = 1, reverse::Bool = false)
 	w = cis(direction)
 	range = reverse ? vcat(start:-1:1, length(tile.sides):-1:start+1) : vcat(start:length(tile.sides), 1:start-1)
 	for i in range

@@ -4,19 +4,14 @@ const Point = Complex{Float64}
 struct Node
 	position::Point
 	neighbors::Vector{Node}
-	function Node(position::Point)
-		new(position, [])
-	end
+	Node(position::Point) = new(position, [])
 end
 
 Base.show(io::IO, node::Node) = print(io, "Node($(round(node.position, digits=2)))")
 
 struct Turtle
 	root::Ref{Node}
-	function Turtle()
-		root = Ref(Node(0.0 + 0.0im))
-		new(root)
-	end
+    Turtle() = new(Ref(Node(0.0 + 0.0im)))
 end
 
 Base.show(io::IO, turtle::Turtle) = print(io, "Turtle($(turtle.root[]))")

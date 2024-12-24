@@ -72,7 +72,7 @@ function move!(turtle::Turtle, position::Point, create::Bool=false)
             return nothing
         end
     end
-    return nothing
+    error("No neighbor found at $position") 
 end
 
 move!!(turtle::Turtle, position::Point) = move!(turtle, position, true)

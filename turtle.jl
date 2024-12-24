@@ -191,14 +191,14 @@ struct Tile
 	end
 end
 
-function tile!(turtle::Turtle, index::Int, tile::Tile, start::Int = 1, reverse::Bool = false)
+function tile!(turtle::Turtle, index::Int, tile::Tile; start::Int = 1, reverse::Bool = false)
     root = turtle.root[]
     direction = root.neighbors[index].position - root.position
-    tile!(turtle, tile, angle(direction), start, reverse)
+    tile!(turtle, tile, angle(direction), start = start, reverse = reverse)
     return nothing
 end
 
-function tile!(turtle::Turtle, tile::Tile, direction::Real = 0, start::Int = 1, reverse::Bool = false)
+function tile!(turtle::Turtle, tile::Tile, direction::Real = 0; start::Int = 1, reverse::Bool = false)
 	w = cis(direction)
 	range = reverse ? vcat(start:-1:1, length(tile.sides):-1:start+1) : vcat(start:length(tile.sides), 1:start-1)
 	for i in range

@@ -1,4 +1,4 @@
-include("./turtle.jl")
+include("../turtle.jl")
 
 tri = ngon(3)
 squ = ngon(4)
@@ -141,4 +141,4 @@ colors = Dict(
     12 => RGB(174 / 255, 236 / 255, 239 / 255)
 )
 
-plot!(t, colors = colors)
+plot!(t, colors = colors, output = "samy.svg")

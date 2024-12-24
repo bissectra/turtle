@@ -164,6 +164,16 @@ function plot!(turtle::Turtle; colors=nothing, output = "output.svg", number_edg
 		end
 	end
     plot_root && scatter!(ax, [reim(root.position)], color = :red, markersize = fontsize)
+	cur_directory = pwd()
+	# if we are in the examples directory, we need to go up one level
+	if occursin("examples", cur_directory)
+		cd("..")
+	end
+	# create the output directory if it doesn't exist
+	if !isdir("output")
+		mkdir("output")
+	end
+	output = joinpath("output", output)
 	save(output, fig)
 	return nothing
 end

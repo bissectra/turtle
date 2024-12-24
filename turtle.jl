@@ -248,3 +248,10 @@ function tile!(turtle::Turtle, n::Int, tiles::Vararg{Tile, N}) where N
     end
     return nothing
 end
+
+function move!(turtle::Turtle, indices::Vararg{Int, N}) where N
+    for index in indices
+        move!(turtle, index)
+    end
+    return nothing
+end

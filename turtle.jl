@@ -42,7 +42,16 @@ end
 
 function add_node!(turtle::Turtle, position::Point)
     root = turtle.root[]
-    node = Node(root.position + position)
+    position += root.position
+    found = false
+    dfs(root) do node
+        if abs(node.position - position) < 1e-6
+            found = true
+            return
+        end
+    end
+    found && return
+    node = Node(position)
     link!(root, node)
     return nothing
 end

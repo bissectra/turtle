@@ -142,13 +142,13 @@ function plot!(turtle::Turtle; colors=nothing, output = "output.png", number_edg
 	hidespines!(ax)
     for face in fs
         polygon = [reim(node.position) for node in face]
-        poly!(ax, polygon, color=(colors[length(polygon)], 0.5))
+        poly!(ax, polygon, color=(colors[length(polygon)], 1))
     end
 	dfs(root) do node
 		for (i, neighbor) in enumerate(node.neighbors)
 			text_position = reim((2 * node.position + neighbor.position) / 3)
 			mid_position = (node.position + neighbor.position) / 2
-			lines!(ax, [reim(node.position), reim(mid_position)], color = :blue)
+			lines!(ax, [reim(node.position), reim(mid_position)], color = :white, linewidth = 0.5)
 			if number_edges
 				scatter!(ax, [text_position], color = :black, markersize = 20)
 				text!(ax, text_position, text = string(i), color = :white, align = (:center, :center))

@@ -11,7 +11,7 @@ Base.show(io::IO, node::Node) = print(io, "Node($(round(node.position, digits=2)
 
 struct Turtle
 	root::Ref{Node}
-    Turtle() = new(Ref(Node(0.0 + 0.0im)))
+	Turtle() = new(Ref(Node(0.0 + 0.0im)))
 	Turtle(root::Node) = new(Ref(root))
 end
 
@@ -59,10 +59,10 @@ end
 
 function Base.intersect(p1::Point, p2::Point, p3::Point, p4::Point)
 	# You're fine if the points are the same
-	abs(p1-p3) < 1e-6 && return false
-	abs(p1-p4) < 1e-6 && return false
-	abs(p2-p3) < 1e-6 && return false
-	abs(p2-p4) < 1e-6 && return false
+	abs(p1 - p3) < 1e-6 && return false
+	abs(p1 - p4) < 1e-6 && return false
+	abs(p2 - p3) < 1e-6 && return false
+	abs(p2 - p4) < 1e-6 && return false
 	x1, y1 = reim(p1)
 	x2, y2 = reim(p2)
 	x3, y3 = reim(p3)
@@ -138,20 +138,20 @@ function Base.length(turtle::Turtle)
 	return ans
 end
 
-function plot!(turtle::Turtle; colors=nothing, output = "output.svg", number_edges = false, plot_root = false, fontsize=10)
+function plot!(turtle::Turtle; colors = nothing, output = "output.svg", number_edges = false, plot_root = false, fontsize = 10)
 	root = turtle.root[]
 	fs = faces(root)
 	if isnothing(colors)
-        colors = distinguishable_colors(maximum([length(face) for face in fs]))	
+		colors = distinguishable_colors(maximum([length(face) for face in fs]))
 	end
 	fig = Figure()
 	ax = Axis(fig[1, 1], aspect = DataAspect())
 	hidedecorations!(ax)
 	hidespines!(ax)
-    for face in fs
-        polygon = [reim(node.position) for node in face]
-        poly!(ax, polygon, color=(colors[length(polygon)], 1))
-    end
+	for face in fs
+		polygon = [reim(node.position) for node in face]
+		poly!(ax, polygon, color = (colors[length(polygon)], 1))
+	end
 	dfs(root) do node
 		for (i, neighbor) in enumerate(node.neighbors)
 			text_position = reim((2 * node.position + neighbor.position) / 3)
@@ -163,7 +163,7 @@ function plot!(turtle::Turtle; colors=nothing, output = "output.svg", number_edg
 			end
 		end
 	end
-    plot_root && scatter!(ax, [reim(root.position)], color = :red, markersize = fontsize)
+	plot_root && scatter!(ax, [reim(root.position)], color = :red, markersize = fontsize)
 	cur_directory = pwd()
 	# if we are in the examples directory, we need to go up one level
 	if occursin("examples", cur_directory)
@@ -192,10 +192,10 @@ struct Tile
 end
 
 function tile!(turtle::Turtle, index::Int, tile::Tile; start::Int = 1, reverse::Bool = false)
-    root = turtle.root[]
-    direction = root.neighbors[index].position - root.position
-    tile!(turtle, tile, angle(direction), start = start, reverse = reverse)
-    return nothing
+	root = turtle.root[]
+	direction = root.neighbors[index].position - root.position
+	tile!(turtle, tile, angle(direction), start = start, reverse = reverse)
+	return nothing
 end
 
 function tile!(turtle::Turtle, tile::Tile, direction::Real = 0; start::Int = 1, reverse::Bool = false)
@@ -215,85 +215,85 @@ function ngon(n::Int, size::Real = 1.0)::Tile
 end
 
 function next(u::Node, v::Node)
-    # returns next edge in the cycle
-    # sort v's neighbors by angle
-    neighbors = v.neighbors
-    n = length(neighbors)
-    angles = [angle(neighbor.position - v.position) for neighbor in neighbors]
-    order = sortperm(angles)
-    # return the neighbor that comes before u
-    for i in 1:n
-        if neighbors[order[i]] == u
-            return neighbors[order[mod1(i - 1, n)]]
-        end
-    end
-    error("u is not a neighbor of v")
+	# returns next edge in the cycle
+	# sort v's neighbors by angle
+	neighbors = v.neighbors
+	n = length(neighbors)
+	angles = [angle(neighbor.position - v.position) for neighbor in neighbors]
+	order = sortperm(angles)
+	# return the neighbor that comes before u
+	for i in 1:n
+		if neighbors[order[i]] == u
+			return neighbors[order[mod1(i - 1, n)]]
+		end
+	end
+	error("u is not a neighbor of v")
 end
 
 function face(u::Node, v::Node)
-    # returns the face that the edge uv is part of
-    ans = [u, v]
-    while true
-        u, v = v, next(u, v)
-        if v == ans[1]
-            return ans
-        end
-        push!(ans, v)
-    end
+	# returns the face that the edge uv is part of
+	ans = [u, v]
+	while true
+		u, v = v, next(u, v)
+		if v == ans[1]
+			return ans
+		end
+		push!(ans, v)
+	end
 end
 
 Base.isless(u::Node, v::Node) = reim(u.position) < reim(v.position)
 
 function faces(root::Node)
-    # returns all faces in the graph, withouth duplicates, and without the outer face
-    ans = Vector{Node}[]
-    dfs(root) do node
-        for neighbor in node.neighbors
-            f = face(node, neighbor)
-            # find the minimum element in f
-            min_index = argmin(f)
-            # if the node is the minimum element, add the face
-            if f[min_index] == node
-                push!(ans, f)
-            end
-        end
-    end
-    # remove face with highest length
-    max_index = argmax([length(face) for face in ans])
-    splice!(ans, max_index)
-    return ans
+	# returns all faces in the graph, withouth duplicates, and without the outer face
+	ans = Vector{Node}[]
+	dfs(root) do node
+		for neighbor in node.neighbors
+			f = face(node, neighbor)
+			# find the minimum element in f
+			min_index = argmin(f)
+			# if the node is the minimum element, add the face
+			if f[min_index] == node
+				push!(ans, f)
+			end
+		end
+	end
+	# remove face with highest length
+	max_index = argmax([length(face) for face in ans])
+	splice!(ans, max_index)
+	return ans
 end
 
 function tile!(turtle::Turtle, n::Int, tiles::Vararg{Tile, N}) where N
-    tile!(turtle, n, tiles[1])
-    n = length(turtle.root[].neighbors)
-    for tile in tiles[2:end]
-        tile!(turtle, n, tile)
-        n += 1
-    end
-    return nothing
+	tile!(turtle, n, tiles[1])
+	n = length(turtle.root[].neighbors)
+	for tile in tiles[2:end]
+		tile!(turtle, n, tile)
+		n += 1
+	end
+	return nothing
 end
 
 function move!(turtle::Turtle, indices::Vararg{Int, N}) where N
-    for index in indices
-        move!(turtle, index)
-    end
-    return turtle.root[]
+	for index in indices
+		move!(turtle, index)
+	end
+	return turtle.root[]
 end
 
 function transform(f::Function, root::Node)::Node
-    new_nodes = Dict{Node, Node}()
-    new_root = Node(f(root.position))
-    new_nodes[root] = new_root
+	new_nodes = Dict{Node, Node}()
+	new_root = Node(f(root.position))
+	new_nodes[root] = new_root
 
-    dfs(root) do node
-        new_node = get!(new_nodes, node, Node(f(node.position)))
-        for neighbor in node.neighbors
-            new_neighbor = get!(new_nodes, neighbor, Node(f(neighbor.position)))
-            link!(new_node, new_neighbor)
-        end
-    end
-    return new_root
+	dfs(root) do node
+		new_node = get!(new_nodes, node, Node(f(node.position)))
+		for neighbor in node.neighbors
+			new_neighbor = get!(new_nodes, neighbor, Node(f(neighbor.position)))
+			link!(new_node, new_neighbor)
+		end
+	end
+	return new_root
 end
 
 function transform(f::Function, turtle::Turtle)
@@ -310,7 +310,7 @@ end
 
 function destruct!(node::Node)
 	for neighbor in node.neighbors
-		deleteat!(neighbor.neighbors, findfirst(x->x===node, neighbor.neighbors))
+		deleteat!(neighbor.neighbors, findfirst(x -> x === node, neighbor.neighbors))
 	end
 	return nothing
 end

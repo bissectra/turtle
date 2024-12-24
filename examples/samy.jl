@@ -130,15 +130,15 @@ tile!(t, 1, tri)
 move!(t, 1, 1)
 
 reflection(z, p, q) = p + (q - p) * conj((z - p) / (q - p))
-transform!(p-> conj(p), t, 2)
-transform!(z-> reflection(z, 0, im), t)
+transform!(p -> conj(p), t, 2)
+transform!(z -> reflection(z, 0, im), t)
 
 colors = Dict(
-    3 => RGB(6 / 255, 141 / 255, 157 / 255),
-    4 => RGB(83 / 255, 89 / 255, 154 / 255),
-    6 => RGB(109 / 255, 157 / 255, 197 / 255),
-    8 => RGB(128 / 255, 222 / 255, 217 / 255),
-    12 => RGB(174 / 255, 236 / 255, 239 / 255)
+	3 => RGB(6 / 255, 141 / 255, 157 / 255),
+	4 => RGB(83 / 255, 89 / 255, 154 / 255),
+	6 => RGB(109 / 255, 157 / 255, 197 / 255),
+	8 => RGB(128 / 255, 222 / 255, 217 / 255),
+	12 => RGB(174 / 255, 236 / 255, 239 / 255),
 )
 
 plot!(t, colors = colors, output = "samy.svg")

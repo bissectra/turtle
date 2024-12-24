@@ -86,17 +86,25 @@ function Base.length(turtle::Turtle)
 end
 
 function plot!(turtle::Turtle, output::String="output.png")
-    fig = Figure(size=(800, 800))
+    fig = Figure()
     ax = Axis(fig[1, 1], aspect = DataAspect())
     hidedecorations!(ax)
     hidespines!(ax)
     root = turtle.root[]
     dfs(root) do node
-        scatter!(ax, [reim(node.position)], color= node == root ? :red : :blue)
+        scatter!(ax, [reim(node.position)], color= node == root ? :red : :blue, markersize=15)
         for neighbor in node.neighbors
             lines!(ax, [reim(node.position), reim(neighbor.position)], color=:blue)
         end
     end
+    dfs(root) do node
+        for (i, neighbor) in enumerate(node.neighbors)
+            text_position = reim((2 * node.position + neighbor.position) / 3)
+            scatter!(ax, [text_position], color=:white, markersize=20)
+            text!(ax, text_position, text = string(i), color = :black, align = (:center, :center))
+        end
+    end
+
     save(output, fig)
     return nothing
 end

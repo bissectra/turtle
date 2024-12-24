@@ -140,7 +140,6 @@ function plot!(turtle::Turtle, colors=nothing, output = "output.png")
         poly!(ax, polygon, color=(colors[length(polygon)], 0.5))
     end
 	dfs(root) do node
-		scatter!(ax, [reim(node.position)], color = node == root ? :red : :blue, markersize = 15)
 		for (i, neighbor) in enumerate(node.neighbors)
 			text_position = reim((2 * node.position + neighbor.position) / 3)
 			mid_position = (node.position + neighbor.position) / 2
@@ -149,6 +148,7 @@ function plot!(turtle::Turtle, colors=nothing, output = "output.png")
 			text!(ax, text_position, text = string(i), color = :white, align = (:center, :center))
 		end
 	end
+    scatter!(ax, [reim(root.position)], color = :red, markersize = 20)
 	save(output, fig)
 	return nothing
 end

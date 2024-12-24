@@ -40,20 +40,20 @@ function dfs(callback::Function, node::Node, visited::Set{Node}=Set{Node}())
     return nothing
 end
 
-function add_node!(turtle::Turtle, position::Point)
+function add_node!(turtle::Turtle, position::Point)::Node
     root = turtle.root[]
     position += root.position
-    found = false
+    existing_node = nothing
     dfs(root) do node
         if abs(node.position - position) < 1e-6
-            found = true
+            existing_node = node
             return
         end
     end
-    found && return
+    !isnothing(existing_node) && return existing_node
     node = Node(position)
     link!(root, node)
-    return nothing
+    return node
 end
 
 function move!(turtle::Turtle, index::Int)
@@ -64,7 +64,12 @@ end
 
 function move!(turtle::Turtle, position::Point, create::Bool=false)
     root = turtle.root[]
-    create && add_node!(turtle, position)
+    if create
+        node = add_node!(turtle, position)
+        link!(root, node)
+        turtle.root[] = node
+        return nothing
+    end
     position += root.position
     for neighbor in root.neighbors
         if abs(neighbor.position - position) < 1e-6

@@ -37,6 +37,9 @@ function dfs(callback::Function, node::Node, visited::Set{Node} = Set{Node}())
 end
 
 function Base.intersect(p1::Point, p2::Point, p3::Point)
+	if abs(p1 - p3) < 1e-6 || abs(p2 - p3) < 1e-6
+		return false # you're fine if the point is one of the endpoints
+	end
 	# Check if p3 is on the line segment defined by p1 and p2
 	x1, y1 = reim(p1)
 	x2, y2 = reim(p2)
@@ -55,6 +58,11 @@ function Base.intersect(p1::Point, p2::Point, p3::Point)
 end
 
 function Base.intersect(p1::Point, p2::Point, p3::Point, p4::Point)
+	# You're fine if the points are the same
+	abs(p1-p3) < 1e-6 && return false
+	abs(p1-p4) < 1e-6 && return false
+	abs(p2-p3) < 1e-6 && return false
+	abs(p2-p4) < 1e-6 && return false
 	x1, y1 = reim(p1)
 	x2, y2 = reim(p2)
 	x3, y3 = reim(p3)
@@ -130,7 +138,7 @@ function Base.length(turtle::Turtle)
 	return ans
 end
 
-function plot!(turtle::Turtle; colors=nothing, output = "output.png", number_edges = false, plot_root = false)
+function plot!(turtle::Turtle; colors=nothing, output = "output.svg", number_edges = false, plot_root = false, fontsize=10)
 	root = turtle.root[]
 	fs = faces(root)
 	if isnothing(colors)
@@ -150,12 +158,12 @@ function plot!(turtle::Turtle; colors=nothing, output = "output.png", number_edg
 			mid_position = (node.position + neighbor.position) / 2
 			lines!(ax, [reim(node.position), reim(mid_position)], color = :white, linewidth = 0.5)
 			if number_edges
-				scatter!(ax, [text_position], color = :black, markersize = 20)
-				text!(ax, text_position, text = string(i), color = :white, align = (:center, :center))
+				scatter!(ax, [text_position], color = :black, markersize = fontsize)
+				text!(ax, text_position, text = string(i), color = :white, align = (:center, :center), fontsize = fontsize)
 			end
 		end
 	end
-    plot_root && scatter!(ax, [reim(root.position)], color = :red, markersize = 20)
+    plot_root && scatter!(ax, [reim(root.position)], color = :red, markersize = fontsize)
 	save(output, fig)
 	return nothing
 end
@@ -313,6 +321,19 @@ function merge!(turtle1::Turtle, turtle2::Turtle)
 	root2 = transform(p -> p + delta, root2)
 	nodes1 = nodes(root1)
 	nodes2 = nodes(root2)
+	# Check for intersections
+	for node1 in nodes1, node2 in nodes2
+		for neighbor1 in node1.neighbors
+			if intersect(node1.position, neighbor1.position, node2.position)
+				error("Edges intersect")
+			end
+			for neighbor2 in node2.neighbors
+				if intersect(node1.position, neighbor1.position, node2.position, neighbor2.position)
+					error("Edges intersect at $node1, $neighbor1, $node2, $neighbor2")
+				end
+			end
+		end
+	end
 	for node1 in nodes1, node2 in nodes2
 		if abs(node1.position - node2.position) < 1e-6
 			merge!(node1, node2)

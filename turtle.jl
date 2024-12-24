@@ -35,21 +35,11 @@ end
 
 function tile!(turtle::Turtle, index::Int, direction::Real, start::Int=1, reverse::Bool=false)
     tile = turtle.tiles[index]
-    if !reverse
-        w = cis(direction)
-        range = vcat(start:length(tile.sides), 1:start-1)
-        for i in range
-            move!!(turtle, tile.sides[i] * w)
-            w *= cis(π - tile.angles[mod1(i+1, length(tile.sides))])
-        end
-        return nothing
-    end 
     w = cis(direction)
-    range = vcat(start:-1:1, length(tile.sides):-1:start+1)
-    println(range)
+    range = reverse ? vcat(start:-1:1, length(tile.sides):-1:start+1) : vcat(start:length(tile.sides), 1:start-1)
     for i in range
         move!!(turtle, tile.sides[i] * w)
-        w *= cis(π - tile.angles[mod1(i, length(tile.sides))])
+        w *= cis(π - tile.angles[mod1(i + (reverse ? 0 : 1), length(tile.sides))])
     end
     return nothing
 end

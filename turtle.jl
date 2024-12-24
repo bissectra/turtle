@@ -40,6 +40,36 @@ function dfs(callback::Function, node::Node, visited::Set{Node}=Set{Node}())
     return nothing
 end
 
+function Base.intersect(p1::Point, p2::Point, p3::Point)
+    # Check if p3 is on the line segment defined by p1 and p2
+    x1, y1 = reim(p1)
+    x2, y2 = reim(p2)
+    x3, y3 = reim(p3)
+
+    # Check for colinearity
+    t = (x3 - x1) * (y2 - y1) - (y3 - y1) * (x2 - x1)
+    if abs(t) > 1e-6
+        return false
+    end
+
+    # Check if p3 is inside the line segment
+    in_bounds_x = (x1 <= x3 <= x2) || (x2 <= x3 <= x1)
+    in_bounds_y = (y1 <= y3 <= y2) || (y2 <= y3 <= y1)
+    return in_bounds_x && in_bounds_y
+end
+
+function Base.intersect(p1::Point, p2::Point, p3::Point, p4::Point)
+    x1, y1 = reim(p1)
+    x2, y2 = reim(p2)
+    x3, y3 = reim(p3)
+    x4, y4 = reim(p4)
+    a = (x1 - x2) * (y3 - y1) + (y1 - y2) * (x1 - x3)
+    b = (x1 - x2) * (y4 - y1) + (y1 - y2) * (x1 - x4)
+    c = (x3 - x4) * (y1 - y3) + (y3 - y4) * (x3 - x1)
+    d = (x3 - x4) * (y2 - y3) + (y3 - y4) * (x3 - x2)
+    return a * b < 0 && c * d < 0
+end
+
 function add_node!(turtle::Turtle, position::Point)::Node
     root = turtle.root[]
     position += root.position
@@ -51,6 +81,17 @@ function add_node!(turtle::Turtle, position::Point)::Node
         end
     end
     !isnothing(existing_node) && return existing_node
+    # Node not found, create a new one. But before, let's check if the new edge would intersect with any existing edge
+    dfs(root) do node
+        for neighbor in node.neighbors
+            if intersect(node.position, neighbor.position, position)
+                error("New edge intersects with existing edge")
+            end
+            if intersect(node.position, neighbor.position, root.position, position)
+                error("New edge intersects with existing edge")
+            end
+        end
+    end
     node = Node(position)
     link!(root, node)
     return node

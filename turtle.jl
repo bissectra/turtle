@@ -126,7 +126,10 @@ function Base.length(turtle::Turtle)
 	return ans
 end
 
-function plot!(turtle::Turtle, output::String = "output.png")
+function plot!(turtle::Turtle, colors=nothing, output = "output.png")
+    if isnothing(colors)
+        colors = [:red, :green, :blue, :yellow, :purple, :orange, :cyan, :magenta, :brown, :pink, :gray, :olive]
+    end
 	fig = Figure()
 	ax = Axis(fig[1, 1], aspect = DataAspect())
 	hidedecorations!(ax)
@@ -134,7 +137,7 @@ function plot!(turtle::Turtle, output::String = "output.png")
 	root = turtle.root[]
     for face in faces(root)
         polygon = [reim(node.position) for node in face]
-        poly!(ax, polygon)
+        poly!(ax, polygon, color=(colors[length(polygon)], 0.5))
     end
 	dfs(root) do node
 		scatter!(ax, [reim(node.position)], color = node == root ? :red : :blue, markersize = 15)

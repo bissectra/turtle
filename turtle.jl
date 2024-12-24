@@ -173,3 +173,9 @@ function tile!(turtle::Turtle, tile::Tile, direction::Real, start::Int = 1, reve
 	end
 	return nothing
 end
+
+function ngon(n::Int, size::Real=1.0)::Tile
+    points = [cis(2π * i / n) for i in 0:n-1]
+    side = abs(points[2] - points[1])
+    return Tile(points / side * size)
+end

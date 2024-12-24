@@ -1,27 +1,9 @@
 include("./turtle.jl")
 
-tile = Tile([0.0 + 0.0im, 1.0 + 0.0im, 1.0 + 2.0im, 0.0 + 1.0im])
+trap = Tile([0.0 + 0.0im, 1.0 + 0.0im, 1.0 + 2.0im, 0.0 + 1.0im])
+tiles = [trap, ngon(3), ngon(4), ngon(6), ngon(12)]
 t = Turtle()
 
-function ngon!(t::Turtle, n::Int, size::Real, direction::Real)
-	w = size * cis(direction)
-	for i in 1:n
-		move!!(t, w)
-		w *= cis(2π / n)
-	end
-end
-
-function trap!(t::Turtle, size::Real, direction::Real)
-	w = size * cis(direction)
-	move!!(t, w)
-	w *= cis(π / 2)
-	move!!(t, 2w)
-	w *= cis(3π / 4)
-	move!!(t, w * sqrt(2))
-	w *= cis(π / 4)
-	move!!(t, w)
-end
-
-tile!(t, tile, 0, 2, true)
-tile!(t, tile, pi / 4, 3)
+tile!(t, tiles[2], 0, 2, true)
+tile!(t, tiles[1], 3pi/2, 2, false)
 plot!(t)

@@ -202,3 +202,15 @@ function next(u::Node, v::Node)
     end
     error("u is not a neighbor of v")
 end
+
+function face(u::Node, v::Node)
+    # returns the face that the edge uv is part of
+    ans = [u, v]
+    while true
+        u, v = v, next(u, v)
+        if v == ans[1]
+            return ans
+        end
+        push!(ans, v)
+    end
+end

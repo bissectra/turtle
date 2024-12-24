@@ -129,8 +129,8 @@ move!(t, 1)
 tile!(t, 1, tri)
 move!(t, 1, 1)
 
-q = transform(p -> conj(p), t)
-move!(q, 1)
+reflection(z, p, q) = p + (q - p) * conj((z - p) / (q - p))
+transform!(p-> conj(p), t, 2)
+transform!(z-> reflection(z, 0, im), t)
 
-plot!(t, number_edges = false)
-plot!(q, number_edges = false, output = "output_conj.png")
+plot!(t)

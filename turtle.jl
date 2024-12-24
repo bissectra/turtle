@@ -1,4 +1,4 @@
-using Makie, CairoMakie
+using Makie, CairoMakie, Colors
 
 const Point = Complex{Float64}
 struct Node
@@ -130,16 +130,17 @@ function Base.length(turtle::Turtle)
 	return ans
 end
 
-function plot!(turtle::Turtle; colors=nothing, output = "output.png", number_edges = false)
-    if isnothing(colors)
-        colors = [:red, :green, :blue, :yellow, :purple, :orange, :cyan, :magenta, :brown, :pink, :gray, :olive, :navy, :teal, :maroon, :aqua, :lime, :fuchsia, :silver, :black, :white, :red, :green, :blue, :yellow, :purple, :orange, :cyan, :magenta, :brown, :pink, :gray, :olive, :navy, :teal, :maroon, :aqua, :lime, :fuchsia, :silver, :black, :white]
-    end
+function plot!(turtle::Turtle; colors=nothing, output = "output.png", number_edges = false, plot_root = false)
+	root = turtle.root[]
+	fs = faces(root)
+	if isnothing(colors)
+        colors = distinguishable_colors(maximum([length(face) for face in fs]))	
+	end
 	fig = Figure()
 	ax = Axis(fig[1, 1], aspect = DataAspect())
 	hidedecorations!(ax)
 	hidespines!(ax)
-	root = turtle.root[]
-    for face in faces(root)
+    for face in fs
         polygon = [reim(node.position) for node in face]
         poly!(ax, polygon, color=(colors[length(polygon)], 0.5))
     end
@@ -154,7 +155,7 @@ function plot!(turtle::Turtle; colors=nothing, output = "output.png", number_edg
 			end
 		end
 	end
-    scatter!(ax, [reim(root.position)], color = :red, markersize = 20)
+    plot_root && scatter!(ax, [reim(root.position)], color = :red, markersize = 20)
 	save(output, fig)
 	return nothing
 end
@@ -279,4 +280,50 @@ end
 
 function transform(f::Function, turtle::Turtle)
 	Turtle(transform(f, turtle.root[]))
+end
+
+function nodes(root::Node)
+	ans = Node[]
+	dfs(root) do node
+		push!(ans, node)
+	end
+	return ans
+end
+
+function destruct!(node::Node)
+	for neighbor in node.neighbors
+		deleteat!(neighbor.neighbors, findfirst(x->x===node, neighbor.neighbors))
+	end
+	return nothing
+end
+
+function merge!(node1::Node, node2::Node)
+	abs(node1.position - node2.position) < 1e-6 || error("Nodes are not at the same position")
+	for neighbor in node2.neighbors
+		link!(node1, neighbor)
+	end
+	destruct!(node2)
+	return nothing
+end
+
+function merge!(turtle1::Turtle, turtle2::Turtle)
+	root1 = turtle1.root[]
+	root2 = turtle2.root[]
+	delta = root1.position - root2.position
+	root2 = transform(p -> p + delta, root2)
+	nodes1 = nodes(root1)
+	nodes2 = nodes(root2)
+	for node1 in nodes1, node2 in nodes2
+		if abs(node1.position - node2.position) < 1e-6
+			merge!(node1, node2)
+		end
+	end
+	return nothing
+end
+
+function transform!(f::Function, turtle::Turtle, moves::Vararg{Int, N}) where N
+	new_turtle = transform(f, turtle)
+	move!(new_turtle, moves...)
+	merge!(turtle, new_turtle)
+	return nothing
 end

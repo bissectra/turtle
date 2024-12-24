@@ -62,6 +62,21 @@ function move!(turtle::Turtle, index::Int)
     return nothing
 end
 
+function move!(turtle::Turtle, position::Point, create::Bool=false)
+    root = turtle.root[]
+    create && add_node!(turtle, position)
+    position += root.position
+    for neighbor in root.neighbors
+        if abs(neighbor.position - position) < 1e-6
+            turtle.root[] = neighbor
+            return nothing
+        end
+    end
+    return nothing
+end
+
+move!!(turtle::Turtle, position::Point) = move!(turtle, position, true)
+
 function plot!(turtle::Turtle, output::String="output.png")
     fig = Figure(size=(800, 800))
     ax = Axis(fig[1, 1], aspect = DataAspect())

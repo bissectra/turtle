@@ -1,6 +1,7 @@
 include("./turtle.jl")
 
-t = Turtle()
+tile = Tile([0.0 + 0.0im, 1.0 + 0.0im, 1.0 + 1.0im, 0.0 + 1.0im])
+t = Turtle([tile])
 
 function ngon!(t::Turtle, n::Int, size::Real, direction::Real)
     w = size * cis(direction)
@@ -29,4 +30,5 @@ move!(t, 2)
 ngon!(t, 5, 0.5, 0)
 move!!(t, -10.0 + 0.0im)
 trap!(t, 5, π/4)
+tile!(t, 1, pi)
 plot!(t)

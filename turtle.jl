@@ -11,12 +11,36 @@ end
 
 Base.show(io::IO, node::Node) = print(io, "Node($(round(node.position, digits=2)))")
 
+struct Tile
+    sides::Vector{Float64}
+    angles::Vector{Float64}
+    function Tile(polygon::Vector{Point})
+        n = length(polygon)
+        n < 3 && error("Polygon must have at least 3 sides")
+        sides = [abs(polygon[i] - polygon[mod1(i + 1, n)]) for i in 1:n]
+        a(p1, p2, p3) = mod2pi(angle((p1 - p2) / (p3 - p2)))
+        angles = [a(polygon[mod1(i - 1, n)], polygon[i], polygon[mod1(i + 1, n)]) for i in 1:n]
+        new(sides, angles)
+    end
+end
+
 struct Turtle
     root::Ref{Node}
-    function Turtle()
+    tiles::Vector{Tile}
+    function Turtle(tiles::Vector{Tile} = Tile[])
         root = Ref(Node(0.0 + 0.0im))
-        new(root)
+        new(root, tiles)
     end
+end
+
+function tile!(turtle::Turtle, index::Int, direction::Real)
+    tile = turtle.tiles[index]
+    w = cis(direction)
+    for i in 1:length(tile.sides)
+        move!!(turtle, tile.sides[i] * w)
+        w *= cis(tile.angles[mod1(i+1, length(tile.sides))])
+    end
+    return nothing
 end
 
 Base.show(io::IO, turtle::Turtle) = print(io, "Turtle($(turtle.root[]))")

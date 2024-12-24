@@ -127,4 +127,5 @@ move!(t, 1, 1)
 tile!(t, 1, squ, squ)
 move!(t, 1)
 tile!(t, 1, tri)
+
 plot!(t, number_edges = false)

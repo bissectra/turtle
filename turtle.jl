@@ -77,6 +77,14 @@ end
 
 move!!(turtle::Turtle, position::Point) = move!(turtle, position, true)
 
+function Base.length(turtle::Turtle)
+    ans = 0
+    dfs(turtle.root[]) do node
+        ans += 1
+    end
+    return ans
+end
+
 function plot!(turtle::Turtle, output::String="output.png")
     fig = Figure(size=(800, 800))
     ax = Axis(fig[1, 1], aspect = DataAspect())

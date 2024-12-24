@@ -12,6 +12,7 @@ Base.show(io::IO, node::Node) = print(io, "Node($(round(node.position, digits=2)
 struct Turtle
 	root::Ref{Node}
     Turtle() = new(Ref(Node(0.0 + 0.0im)))
+	Turtle(root::Node) = new(Ref(root))
 end
 
 Base.show(io::IO, turtle::Turtle) = print(io, "Turtle($(turtle.root[]))")
@@ -276,7 +277,6 @@ function transform(f::Function, root::Node)::Node
     return new_root
 end
 
-function transform!(f::Function, turtle::Turtle)
-	turtle.root[] = transform(f, turtle.root[])
-	return nothing
+function transform(f::Function, turtle::Turtle)
+	Turtle(transform(f, turtle.root[]))
 end

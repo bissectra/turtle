@@ -129,6 +129,8 @@ move!(t, 1)
 tile!(t, 1, tri)
 move!(t, 1, 1)
 
-transform!(p -> conj(p), t)
+q = transform(p -> conj(p), t)
+move!(q, 1)
 
 plot!(t, number_edges = false)
+plot!(q, number_edges = false, output = "output_conj.png")

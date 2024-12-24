@@ -127,5 +127,8 @@ move!(t, 1, 1)
 tile!(t, 1, squ, squ)
 move!(t, 1)
 tile!(t, 1, tri)
+move!(t, 1, 1)
+
+transform!(p -> conj(p), t)
 
 plot!(t, number_edges = false)

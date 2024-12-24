@@ -66,7 +66,10 @@ function Base.intersect(p1::Point, p2::Point, p3::Point, p4::Point)
 end
 
 function add_node!(turtle::Turtle, position::Point)::Node
-	root = turtle.root[]
+	return add_node!(turtle.root[], position)
+end
+
+function add_node!(root::Node, position::Point)::Node
 	position += root.position
 	existing_node = nothing
 	dfs(root) do node
@@ -95,7 +98,7 @@ end
 function move!(turtle::Turtle, index::Int)
 	root = turtle.root[]
 	turtle.root[] = root.neighbors[index]
-	return nothing
+	return turtle.root[]
 end
 
 function move!(turtle::Turtle, position::Point, create::Bool = false)
@@ -104,13 +107,13 @@ function move!(turtle::Turtle, position::Point, create::Bool = false)
 		node = add_node!(turtle, position)
 		link!(root, node)
 		turtle.root[] = node
-		return nothing
+		return turtle.root[]
 	end
 	position += root.position
 	for neighbor in root.neighbors
 		if abs(neighbor.position - position) < 1e-6
 			turtle.root[] = neighbor
-			return nothing
+			return turtle.root[]
 		end
 	end
 	error("No neighbor found at $position")
@@ -128,7 +131,7 @@ end
 
 function plot!(turtle::Turtle; colors=nothing, output = "output.png", number_edges = false)
     if isnothing(colors)
-        colors = [:red, :green, :blue, :yellow, :purple, :orange, :cyan, :magenta, :brown, :pink, :gray, :olive]
+        colors = [:red, :green, :blue, :yellow, :purple, :orange, :cyan, :magenta, :brown, :pink, :gray, :olive, :navy, :teal, :maroon, :aqua, :lime, :fuchsia, :silver, :black, :white, :red, :green, :blue, :yellow, :purple, :orange, :cyan, :magenta, :brown, :pink, :gray, :olive, :navy, :teal, :maroon, :aqua, :lime, :fuchsia, :silver, :black, :white]
     end
 	fig = Figure()
 	ax = Axis(fig[1, 1], aspect = DataAspect())
@@ -255,5 +258,25 @@ function move!(turtle::Turtle, indices::Vararg{Int, N}) where N
     for index in indices
         move!(turtle, index)
     end
-    return nothing
+    return turtle.root[]
+end
+
+function transform(f::Function, root::Node)::Node
+    new_nodes = Dict{Node, Node}()
+    new_root = Node(f(root.position))
+    new_nodes[root] = new_root
+
+    dfs(root) do node
+        new_node = get!(new_nodes, node, Node(f(node.position)))
+        for neighbor in node.neighbors
+            new_neighbor = get!(new_nodes, neighbor, Node(f(neighbor.position)))
+            link!(new_node, new_neighbor)
+        end
+    end
+    return new_root
+end
+
+function transform!(f::Function, turtle::Turtle)
+	turtle.root[] = transform(f, turtle.root[])
+	return nothing
 end

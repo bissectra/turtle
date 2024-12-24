@@ -126,7 +126,7 @@ function Base.length(turtle::Turtle)
 	return ans
 end
 
-function plot!(turtle::Turtle, colors=nothing, output = "output.png")
+function plot!(turtle::Turtle, colors=nothing, output = "output.png", number_edges = false)
     if isnothing(colors)
         colors = [:red, :green, :blue, :yellow, :purple, :orange, :cyan, :magenta, :brown, :pink, :gray, :olive]
     end
@@ -144,8 +144,10 @@ function plot!(turtle::Turtle, colors=nothing, output = "output.png")
 			text_position = reim((2 * node.position + neighbor.position) / 3)
 			mid_position = (node.position + neighbor.position) / 2
 			lines!(ax, [reim(node.position), reim(mid_position)], color = :blue)
-			scatter!(ax, [text_position], color = :black, markersize = 20)
-			text!(ax, text_position, text = string(i), color = :white, align = (:center, :center))
+			if number_edges
+				scatter!(ax, [text_position], color = :black, markersize = 20)
+				text!(ax, text_position, text = string(i), color = :white, align = (:center, :center))
+			end
 		end
 	end
     scatter!(ax, [reim(root.position)], color = :red, markersize = 20)

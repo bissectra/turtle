@@ -23,4 +23,5 @@ function trap!(t::Turtle, size::Real, direction::Real)
 end
 
 tile!(t, 1, 0, 2, true)
+tile!(t, 1, pi/4, 3)
 plot!(t)

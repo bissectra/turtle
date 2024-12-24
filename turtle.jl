@@ -164,7 +164,14 @@ struct Tile
 	end
 end
 
-function tile!(turtle::Turtle, tile::Tile, direction::Real, start::Int = 1, reverse::Bool = false)
+function tile!(turtle::Turtle, index::Int, tile::Tile, start::Int = 1, reverse::Bool = false)
+    root = turtle.root[]
+    direction = root.neighbors[index].position - root.position
+    tile!(turtle, tile, angle(direction), start, reverse)
+    return nothing
+end
+
+function tile!(turtle::Turtle, tile::Tile, direction::Real = 0, start::Int = 1, reverse::Bool = false)
 	w = cis(direction)
 	range = reverse ? vcat(start:-1:1, length(tile.sides):-1:start+1) : vcat(start:length(tile.sides), 1:start-1)
 	for i in range
@@ -174,8 +181,8 @@ function tile!(turtle::Turtle, tile::Tile, direction::Real, start::Int = 1, reve
 	return nothing
 end
 
-function ngon(n::Int, size::Real=1.0)::Tile
-    points = [cis(2π * i / n) for i in 0:n-1]
-    side = abs(points[2] - points[1])
-    return Tile(points / side * size)
+function ngon(n::Int, size::Real = 1.0)::Tile
+	points = [cis(2π * i / n) for i in 0:n-1]
+	side = abs(points[2] - points[1])
+	return Tile(points / side * size)
 end

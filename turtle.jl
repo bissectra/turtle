@@ -238,3 +238,13 @@ function faces(root::Node)
     splice!(ans, max_index)
     return ans
 end
+
+function tile!(turtle::Turtle, n::Int, tiles::Vararg{Tile, N}) where N
+    tile!(turtle, n, tiles[1])
+    n = length(turtle.root[].neighbors)
+    for tile in tiles[2:end]
+        tile!(turtle, n, tile)
+        n += 1
+    end
+    return nothing
+end

@@ -132,14 +132,18 @@ function plot!(turtle::Turtle, output::String = "output.png")
 	hidedecorations!(ax)
 	hidespines!(ax)
 	root = turtle.root[]
+    for face in faces(root)
+        polygon = [reim(node.position) for node in face]
+        poly!(ax, polygon)
+    end
 	dfs(root) do node
 		scatter!(ax, [reim(node.position)], color = node == root ? :red : :blue, markersize = 15)
 		for (i, neighbor) in enumerate(node.neighbors)
 			text_position = reim((2 * node.position + neighbor.position) / 3)
 			mid_position = (node.position + neighbor.position) / 2
 			lines!(ax, [reim(node.position), reim(mid_position)], color = :blue)
-			scatter!(ax, [text_position], color = :white, markersize = 20)
-			text!(ax, text_position, text = string(i), color = :black, align = (:center, :center))
+			scatter!(ax, [text_position], color = :black, markersize = 20)
+			text!(ax, text_position, text = string(i), color = :white, align = (:center, :center))
 		end
 	end
 	save(output, fig)

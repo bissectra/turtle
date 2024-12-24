@@ -214,3 +214,25 @@ function face(u::Node, v::Node)
         push!(ans, v)
     end
 end
+
+Base.isless(u::Node, v::Node) = reim(u.position) < reim(v.position)
+
+function faces(root::Node)
+    # returns all faces in the graph, withouth duplicates, and without the outer face
+    ans = Vector{Node}[]
+    dfs(root) do node
+        for neighbor in node.neighbors
+            f = face(node, neighbor)
+            # find the minimum element in f
+            min_index = argmin(f)
+            # if the node is the minimum element, add the face
+            if f[min_index] == node
+                push!(ans, f)
+            end
+        end
+    end
+    # remove face with highest length
+    max_index = argmax([length(face) for face in ans])
+    splice!(ans, max_index)
+    return ans
+end

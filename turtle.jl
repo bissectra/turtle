@@ -126,7 +126,7 @@ function Base.length(turtle::Turtle)
 	return ans
 end
 
-function plot!(turtle::Turtle, colors=nothing, output = "output.png", number_edges = false)
+function plot!(turtle::Turtle; colors=nothing, output = "output.png", number_edges = false)
     if isnothing(colors)
         colors = [:red, :green, :blue, :yellow, :purple, :orange, :cyan, :magenta, :brown, :pink, :gray, :olive]
     end

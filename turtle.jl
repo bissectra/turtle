@@ -186,3 +186,19 @@ function ngon(n::Int, size::Real = 1.0)::Tile
 	side = abs(points[2] - points[1])
 	return Tile(points / side * size)
 end
+
+function next(u::Node, v::Node)
+    # returns next edge in the cycle
+    # sort v's neighbors by angle
+    neighbors = v.neighbors
+    n = length(neighbors)
+    angles = [angle(neighbor.position - v.position) for neighbor in neighbors]
+    order = sortperm(angles)
+    # return the neighbor that comes before u
+    for i in 1:n
+        if neighbors[order[i]] == u
+            return neighbors[order[mod1(i - 1, n)]]
+        end
+    end
+    error("u is not a neighbor of v")
+end
